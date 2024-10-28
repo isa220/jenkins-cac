@@ -1,0 +1,38 @@
+jenkins:
+  systemMessage: "Welcome to Jenkins JCasC!"
+  noUsageStatistics: true
+  labelString: "jenkins-master"
+  numExecutors: 1
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+       - id: ${JENKINS_ADMIN_ID}
+         password: ${JENKINS_ADMIN_PASSWORD}
+  authorizationStrategy:
+    globalMatrix:
+      entries:
+      - user:
+          name: "admin"
+          permissions:
+          - "Overall/Administer"
+      - group:
+          name: "authenticated"
+          permissions:
+          - "Overall/Read"
+security:
+  queueItemAuthenticator:
+    authenticators:
+    - global:
+        strategy: triggeringUsersAuthorizationStrategy
+unclassified:
+  location:
+    adminAddress: "admin@mail.me"
+    url: http://localhost:8080/
+
+# specify the seedjob groovy script that will create the  pipelines for us
+jobs:
+  - file: /usr/local/seedjob.groovy
