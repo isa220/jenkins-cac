@@ -1,4 +1,4 @@
-name: AWS EC2 Jenkins CI/CD
+name: AWS EC2 Jenkins CI/CD apply
 
 on:
   workflow_dispatch:
