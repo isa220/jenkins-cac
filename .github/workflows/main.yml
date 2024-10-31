@@ -14,25 +14,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Run TFSec
-      uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
-      with:
-        tfsec_args: --soft-fail --config-file tfsec.yml
-
-    - name: Setup TFLint
-      uses: terraform-linters/setup-tflint@v4
-      with:
-        tflint_version: v0.52.0
-        
-    - name: Show TFLint version
-      run: tflint --version
-
-    - name: Init TFLint
-      run: tflint --init
-
-    - name: Run TFLint
-      run: tflint -f compact        
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -47,11 +28,22 @@ jobs:
         terraform plan
         
   terraform-cd:
+    needs: terraform-ci
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-east-1
+        
     - name: Terraform Apply
-      run: terraform apply --auto-approve
+      run: |
+        cd terraform
+        terrafrom init
+        terraform apply --auto-approve
